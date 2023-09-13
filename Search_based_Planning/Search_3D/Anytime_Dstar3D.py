@@ -1,4 +1,4 @@
-# check paper of 
+# check paper of
 # [Likhachev2005]
 import numpy as np
 import matplotlib.pyplot as plt
@@ -32,9 +32,11 @@ class Anytime_Dstar(object):
         self.settings = 'CollisionChecking'  # for collision checking
         self.x0, self.xt = tuple(self.env.start), tuple(self.env.goal)
         self.OPEN = queue.MinheapPQ()
-        self.g = {}  # all g initialized at inf
+        # all g initialized at inf
+        self.g = {}
         self.h = {}
-        self.rhs = {self.xt: 0}  # rhs(x0) = 0
+        # rhs(x0) = 0
+        self.rhs = {self.xt: 0}
         self.OPEN.put(self.xt, self.key(self.xt))
         self.INCONS = set()
         self.CLOSED = set()
@@ -60,7 +62,7 @@ class Anytime_Dstar(object):
         if xi not in self.COST:
             for (xj, xjcost) in children(self, xi, settings=1):
                 self.COST[xi][xj] = cost(self, xi, xj, xjcost)
-        # this might happen when there is a node changed. 
+        # this might happen when there is a node changed.
         if xj not in self.COST[xi]:
             self.COST[xi][xj] = cost(self, xi, xj)
         return self.COST[xi][xj]
@@ -122,7 +124,6 @@ class Anytime_Dstar(object):
     #         self.CHILDREN[xi] = set(children(self, xi))
     #         for xj in self.CHILDREN:
     #             self.COST[xi][xj] = Cost(self, xi, xj)
-        
 
     # --------------main functions for Anytime D star
 
@@ -175,14 +176,20 @@ class Anytime_Dstar(object):
         self.ind = 0
         self.Path = self.path()
         visualization(self)
-        while True:
-            visualization(self)
-            if t == 20:
-                break
+        for i in range(20):
+        # while True:
+            # visualization(self)
+            # if t == 20:
+            #     break
             # change environment
-            # new2,old2 = self.env.move_block(theta = [0,0,0.1*t], mode='rotation')
+            # new2, old2 = self.env.move_block(
+            #     a=[0, 0, 0.1*t], mode='rotation'
+            # )
             # new2, old2 = self.env.move_block(a=[0, 0, -0.2], mode='translation')
-            new2, old2 = self.env.move_OBB(theta=[10*t, 0, 0], translation=[0, 0.1*t, 0])
+            new2, old2 = self.env.move_OBB(
+                obb_to_move=0, translation=[0.1*t, 0.2*t, 0]
+            )
+            # new2, old2 = self.env.move_OBB(theta=[10*t, 0, 0], translation=[0, 0.1*t, 0])
             mmode = 'obb' # obb or aabb
             ischanged = True
             # islargelychanged = True
@@ -215,6 +222,8 @@ class Anytime_Dstar(object):
             # if epsilon == 1:
             # wait for change to occur
             t += 1
+            visualization(self)
+        plt.show()
 
     def path(self, s_start=None):
         '''After ComputeShortestPath()

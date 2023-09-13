@@ -7,14 +7,15 @@
 import numpy as np
 # from utils3D import OBB2AABB
 
-def R_matrix(z_angle,y_angle,x_angle):
+
+def R_matrix(z_angle, y_angle, x_angle):
     # s angle: row; y angle: pitch; z angle: yaw
     # generate rotation matrix in SO3
     # RzRyRx = R, ZYX intrinsic rotation
     # also (r1,r2,r3) in R3*3 in {W} frame
     # used in obb.O
     # [[R p]
-    # [0T 1]] gives transformation from body to world 
+    # [0T 1]] gives transformation from body to world
     return np.array([[np.cos(z_angle), -np.sin(z_angle), 0.0], [np.sin(z_angle), np.cos(z_angle), 0.0], [0.0, 0.0, 1.0]])@ \
            np.array([[np.cos(y_angle), 0.0, np.sin(y_angle)], [0.0, 1.0, 0.0], [-np.sin(y_angle), 0.0, np.cos(y_angle)]])@ \
            np.array([[1.0, 0.0, 0.0], [0.0, np.cos(x_angle), -np.sin(x_angle)], [0.0, np.sin(x_angle), np.cos(x_angle)]])
@@ -32,12 +33,14 @@ def getblocks():
         Obstacles.append([j for j in i])
     return np.array(Obstacles)
 
+
 def getballs():
-    spheres = [[2.0,6.0,2.5,1.0],[14.0,14.0,2.5,2]]
+    spheres = [[2.0, 6.0, 2.5, 1.0], [14.0, 14.0, 2.5, 2]]
     Obstacles = []
     for i in spheres:
         Obstacles.append([j for j in i])
     return np.array(Obstacles)
+
 
 def getAABB(blocks):
     # used for Pyrr package for detecting collision
@@ -46,6 +49,7 @@ def getAABB(blocks):
         AABB.append(np.array([np.add(i[0:3], -0), np.add(i[3:6], 0)]))  # make AABBs alittle bit of larger
     return AABB
 
+
 def getAABB2(blocks):
     # used in lineAABB
     AABB = []
@@ -53,18 +57,21 @@ def getAABB2(blocks):
         AABB.append(aabb(i))
     return AABB
 
-def add_block(block = [1.51e+01, 0.00e+00, 2.10e+00, 1.59e+01, 5.00e+00, 6.00e+00]):
+
+def add_block(block=[1.51e+01, 0.00e+00, 2.10e+00, 1.59e+01, 5.00e+00, 6.00e+00]):
     return block
 
+
 class aabb(object):
-    # make AABB out of blocks, 
+    # make AABB out of blocks,
     # P: center point
     # E: extents
     # O: Rotation matrix in SO(3), in {w}
-    def __init__(self,AABB):
-        self.P = [(AABB[3] + AABB[0])/2, (AABB[4] + AABB[1])/2, (AABB[5] + AABB[2])/2]# center point
-        self.E = [(AABB[3] - AABB[0])/2, (AABB[4] - AABB[1])/2, (AABB[5] - AABB[2])/2]# extents
-        self.O = [[1,0,0],[0,1,0],[0,0,1]]
+    def __init__(self, AABB):
+        self.P = [(AABB[3] + AABB[0])/2, (AABB[4] + AABB[1])/2, (AABB[5] + AABB[2])/2]  # center point
+        self.E = [(AABB[3] - AABB[0])/2, (AABB[4] - AABB[1])/2, (AABB[5] - AABB[2])/2]  # extents
+        self.O = [[1, 0, 0], [0, 1, 0], [0, 0, 1]]
+
 
 class obb(object):
     # P: center point
@@ -74,7 +81,10 @@ class obb(object):
         self.P = P
         self.E = E
         self.O = O
-        self.T = np.vstack([np.column_stack([self.O.T,-self.O.T@self.P]),[0,0,0,1]])
+        self.T = np.vstack(
+            [np.column_stack([self.O.T, -self.O.T@self.P]), [0, 0, 0, 1]]
+        )
+
 
 class env():
     def __init__(self, xmin=0, ymin=0, zmin=0, xmax=20, ymax=20, zmax=5, resolution=1):
@@ -128,7 +138,8 @@ class env():
                             ori[3] + self.resolution, ori[4] + self.resolution, ori[5] + self.resolution])
             # return a,ori
         # (s',t') = (Rx, t)
-    def move_OBB(self, obb_to_move = 0, theta=[0,0,0], translation=[0,0,0]):
+
+    def move_OBB(self, obb_to_move=0, theta=[0, 0, 0], translation=[0, 0, 0]):
     # theta stands for rotational angles around three principle axis in world frame
     # translation stands for translation in the world frame
         ori = [self.OBB[obb_to_move]]
@@ -142,6 +153,7 @@ class env():
         self.OBB[obb_to_move].T = np.vstack([np.column_stack([self.OBB[obb_to_move].O.T,\
             -self.OBB[obb_to_move].O.T@self.OBB[obb_to_move].P]),[translation[0],translation[1],translation[2],1]])
         return self.OBB[obb_to_move], ori[0]
-          
+
+
 if __name__ == '__main__':
     newenv = env()
