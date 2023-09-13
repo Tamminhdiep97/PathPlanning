@@ -1,0 +1,6 @@
+numpy==1.24.4
+Pillow
+pyrr==0.10.3
+scipy==1.10.1
+seaborn==0.11.2
+matplotlib==3.7.3
